@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KFC - Kentucky Fried Chicken</title>
+  <style>
+    /* Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #fff;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background-color: #bf0a10; /* KFC red */
+      color: white;
+      padding: 20px 40px;
+      text-align: center;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      animation: slideDown 1s ease forwards;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    header h1 {
+      font-weight: 900;
+      font-size: 2.5rem;
+      letter-spacing: 2px;
+    }
+    nav {
+      margin-top: 10px;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 20px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: opacity 0.3s ease;
+      position: relative;
+    }
+    nav a::after {
+      content: "";
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      bottom: -5px;
+      left: 0;
+      background-color: white;
+      transition: width 0.3s ease;
+    }
+    nav a:hover::after {
+      width: 100%;
+    }
+    nav a:hover {
+      opacity: 0.8;
+    }
+
+    main {
+      flex-grow: 1;
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+      animation: fadeIn 1s ease 0.5s forwards;
+      opacity: 0;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    section {
+      margin-bottom: 60px;
+    }
+    h2 {
+      border-bottom: 3px solid #bf0a10;
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+      font-size: 2rem;
+      animation: slideLeft 1s ease forwards;
+      opacity: 0;
+    }
+    @keyframes slideLeft {
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Menu Grid */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+    .menu-item {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      background: white;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .menu-item:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+    .menu-item img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid #ddd;
+      transition: transform 0.3s ease;
+    }
+    .menu-item:hover img {
+      transform: scale(1.05);
+    }
+    .menu-content {
+      padding: 15px 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .menu-content h3 {
+      margin-bottom: 10px;
+      color: #bf0a10;
+      font-size: 1.5rem;
+    }
+    .menu-content p {
+      color: #555;
+      line-height: 1.4;
+      flex-grow: 1;
+    }
+    .price {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: #333;
+      margin-top: 10px;
+    }
+    .btn-add {
+      margin-top: 15px;
+      background-color: #bf0a10;
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .btn-add:hover {
+      background-color: #99080c;
+    }
+
+    /* Cart Section */
+    #cart {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      width: 320px;
+      max-height: 70vh;
+      background: white;
+      border: 2px solid #bf0a10;
+      border-radius: 10px;
+      padding: 15px 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      overflow-y: auto;
+      z-index: 200;
+      display: none; /* hidden initially */
+      animation: fadeInCart 0.5s ease forwards;
+    }
+    @keyframes fadeInCart {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+    #cart h3 {
+      margin-bottom: 15px;
+      color: #bf0a10;
+      text-align: center;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 8px;
+    }
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+    .cart-item-name {
+      font-weight: 600;
+    }
+    .cart-item-qty {
+      color: #666;
+    }
+    #cart-total {
+      margin-top: 15px;
+      font-weight: 700;
+      font-size: 1.2rem;
+      text-align: right;
+      border-top: 1px solid #bf0a10;
+      padding-top: 10px;
+    }
+    #btn-order {
+      display: block;
+      width: 100%;
+      margin-top: 15px;
+      background-color: #bf0a10;
+      color: white;
+      border: none;
+      font-weight: 700;
+      padding: 12px 0;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: background-color 0.3s ease;
+    }
+    #btn-order:hover {
+      background-color: #99080c;
+    }
+    #btn-cart-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #bf0a10;
+      border: none;
+      color: white;
+      font-weight: 700;
+      padding: 12px 18px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 300;
+      transition: background-color 0.3s ease;
+    }
+    #btn-cart-toggle:hover {
+      background-color: #99080c;
+    }
+
+    /* Branches Section */
+    #branches ul {
+      list-style: none;
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 0;
+    }
+    #branches ul li {
+      background: #f9f9f9;
+      margin-bottom: 10px;
+      padding: 15px 20px;
+      border-left: 6px solid #bf0a10;
+      font-weight: 600;
+      font-size: 1.1rem;
+      box-shadow: 1px 1px 6px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease, background-color 0.3s ease;
+      cursor: default;
+    }
+    #branches ul li:hover {
+      background-color: #ffe6e3;
+      transform: translateX(10px);
+    }
+
+    /* About and Contact */
+    #about p, #contact p {
+      max-width: 600px;
+      line-height: 1.6;
+      color: #444;
+      font-size: 1.1rem;
+      margin: 0 auto;
+      animation: fadeInText 1.5s ease forwards;
+      opacity: 0;
+    }
+    @keyframes fadeInText {
+      to {opacity: 1;}
+    }
+    #contact a {
+      color: #bf0a10;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    #contact a:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer {
+      background-color: #222;
+      color: #eee;
+      text-align: center;
+      padding: 15px 0;
+      font-size: 0.9rem;
+      margin-top: auto;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 1.8rem;
+      }
+      nav a {
+        margin: 0 10px;
+        font-size: 1rem;
+      }
+      #cart {
+        width: 90vw;
+        top: 70px;
+        right: 5vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>KFC</h1>
+    <nav>
+      <a href="#menu">Menu</a>
+      <a href="#about">About</a>
+      <a href="#branches">Branches</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <button id="btn-cart-toggle" title="Toggle Cart">🛒</button>
+
+  <main>
+    <section id="menu">
+      <h2>Our Menu</h2>
+      <div class="menu-grid">
+        <div class="menu-item" data-name="Original Recipe Chicken" data-price="8.99">
+          <img src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=600&q=80" alt="KFC Original Recipe Chicken" />
+          <div class="menu-content">
+            <h3>Original Recipe Chicken</h3>
+            <p>Crispy fried chicken with KFC’s secret blend of 11 herbs and spices.</p>
+            <p class="price">$8.99 (2 pcs)</p>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+        <div class="menu-item" data-name="Popcorn Chicken" data-price="5.49">
+          <img src="https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?auto=format&fit=crop&w=600&q=80" alt="KFC Popcorn Chicken" />
+          <div class="menu-content">
+            <h3>Popcorn Chicken</h3>
+            <p>Crunchy bite-sized pieces perfect for snacking or sharing.</p>
+            <p class="price">$5.49 (small)</p>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+        <div class="menu-item" data-name="Golden Fries" data-price="2.99">
+          <img src="https://images.unsplash.com/photo-1606755962774-cf973d8de362?auto=format&fit=crop&w=600&q=80" alt="KFC Fries" />
+          <div class="menu-content">
+            <h3>Golden Fries</h3>
+            <p>Perfectly salted crispy fries, a great side for any meal.</p>
+            <p class="price">$2.99 (medium)</p>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+        <div class="menu-item" data-name="Chicken Sandwich" data-price="6.49">
+          <img src="https://images.unsplash.com/photo-1617191510214-85c6e4a5a4f9?auto=format&fit=crop&w=600&q=80" alt="KFC Chicken Sandwich" />
+          <div class="menu-content">
+            <h3>Chicken Sandwich</h3>
+            <p>Juicy fried chicken fillet with pickles and mayo on a toasted bun.</p>
+            <p class="price">$6.49</p>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="branches">
+      <h2>Our Branches</h2>
+      <ul>
+        <li>New York, USA</li>
+        <li>London, UK</li>
+        <li>Toronto, Canada</li>
+        <li>Sydney, Australia</li>
+        <li>Dubai, UAE</li>
+        <li>Tokyo, Japan</li>
+      </ul>
+    </section>
+
+    <section id="about">
+      <h2>About Us</h2>
+      <p>Welcome to KFC, the home of the world-famous Original Recipe fried chicken. Our secret blend of 11 herbs and spices has been delighting taste buds for decades. We’re passionate about delivering delicious, crispy, and flavorful meals that bring people together.</p>
+    </section>
+
+    <section id="contact">
+      <h2>Contact</h2>
+      <p>Email us at <a href="mailto:contact@kfc.com">contact@kfc.com</a></p>
+      <p>123 Chicken Lane, Food City, USA</p>
+      <p>Phone: (123) 456-7890</p>
+    </section>
+  </main>
+
+  <aside id="cart">
+    <h3>Your Cart</h3>
+    <div id="cart-items"></div>
+    <div id="cart-total"></div>
+    <button id="btn-order">Order Now</button>
+  </aside>
+
+  <footer>
+    &copy; 2025 KFC. All rights reserved.
+  </footer>
+
+  <script>
+    const cartToggleBtn = document.getElementById('btn-cart-toggle');
+    const cart = document.getElementById('cart');
+    const cartItemsContainer = document.getElementById('cart-items');
+    const cartTotal = document.getElementById('cart-total');
+    const orderBtn = document.getElementById('btn-order');
+
+    let cartItems = {};
+
+    // Toggle cart visibility
+    cartToggleBtn.addEventListener('click', () => {
+      if (cart.style.display === 'block') {
+        cart.style.display = 'none';
+      } else {
+        cart.style.display = 'block';
+      }
+    });
+
+    // Add to Cart buttons
+    document.querySelectorAll('.btn-add').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const menuItem = e.target.closest('.menu-item');
+        const name = menuItem.getAttribute('data-name');
+        const price = parseFloat(menuItem.getAttribute('data-price'));
+
+        if(cartItems[name]) {
+          cartItems[name].qty += 1;
+        } else {
+          cartItems[name] = { price: price, qty: 1 };
+        }
+        updateCart();
+        // Show cart automatically when item added
+        cart.style.display = 'block';
+      });
+    });
+
+    function updateCart() {
+      cartItemsContainer.innerHTML = '';
+      let total = 0;
+      for (const [name, item] of Object.entries(cartItems)) {
+        total += item.price * item.qty;
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+          <span class="cart-item-name">${name}</span>
+          <span class="cart-item-qty">x${item.qty}</span>
+        `;
+        cartItemsContainer.appendChild(div);
+      }
+      cartTotal.textContent = `Total: $${total.toFixed(2)}`;
+    }
+
+    // Order button click
+    orderBtn.addEventListener('click', () => {
+      if(Object.keys(cartItems).length === 0) {
+        alert("Your cart is empty! Please add items before ordering.");
+        return;
+      }
+      alert("Thank you for your order! Your delicious KFC meal is on its way!");
+      cartItems = {};
+      updateCart();
+      cart.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
